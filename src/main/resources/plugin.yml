@@ -1,0 +1,4 @@
+name: BanWorld
+version: '${version}'
+main: org.windy.banworld.BanWorld
+api-version: '1.20'
