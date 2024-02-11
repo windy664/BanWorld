@@ -1,11 +1,12 @@
 package org.windy.banworld;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -16,43 +17,54 @@ public class BanWorld extends JavaPlugin implements Listener {
     private List<String> whitelistedWorlds;
     private boolean blacklistEnabled;
     private boolean whitelistEnabled;
-    private World defaultWorld;
 
     @Override
     public void onEnable() {
-        loadConfig();
+        this.saveDefaultConfig();
         Bukkit.getPluginManager().registerEvents(this, this);
     }
 
-    private void loadConfig() {
-        saveDefaultConfig();
-        FileConfiguration config = getConfig();
-        blacklistedWorlds = config.getStringList("blacklisted_worlds");
-        whitelistedWorlds = config.getStringList("whitelisted_worlds");
-        blacklistEnabled = config.getBoolean("blacklist_enabled", true);
-        whitelistEnabled = config.getBoolean("whitelist_enabled", false);
-        defaultWorld = Bukkit.getWorld(config.getString("default_world", "world"));
+    @EventHandler
+    public void playerTeleport(PlayerTeleportEvent event) {
+        judgeworlds(event);
     }
 
     @EventHandler
-    public void onPlayerTeleport(PlayerTeleportEvent event) {
-        World targetWorld = event.getTo().getWorld();
-        if (isBlacklisted(targetWorld) && blacklistEnabled) {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage("You are not allowed to teleport to this world.");
-            event.getPlayer().teleport(defaultWorld.getSpawnLocation());
-        } else if (!isWhitelisted(targetWorld) && whitelistEnabled) {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage("You are not allowed to teleport to this world.");
-            event.getPlayer().teleport(defaultWorld.getSpawnLocation());
+    public void playerPortal(PlayerPortalEvent event) {
+        judgeworlds(event);
+    }
+    @EventHandler
+    private void judgeworlds(PlayerTeleportEvent event){
+        FileConfiguration config = getConfig();
+        List<String> whiteList = BanWorld.this.getConfig().getStringList("whitelisted_worlds");
+        List<String> blacklist = BanWorld.this.getConfig().getStringList("blacklisted_worlds");
+        if (whitelistEnabled && blacklistEnabled) {
+            System.err.println("whitelist_enabled 和 blacklist_enabled 不能同时启用");
+        }else {
+            String worldName = event.getTo().getWorld().getName();
+            if (config.getBoolean("whitelist_enabled", true)) {
+                boolean status = whiteList.contains(worldName);
+                if (!status) {
+                    Player player = event.getPlayer();
+                    status = player.hasPermission("world." + worldName);
+                    if (!status) {
+                        String message = ChatColor.RED + "你没有前往 " + worldName + " 世界的权限";
+                        player.sendMessage(message);
+                        event.setCancelled(true);
+                    }
+                }
+            } else if (config.getBoolean("blacklist_enabled", true)) {
+                boolean status = blacklist.contains(worldName);
+                if (!status) {
+                    Player player = event.getPlayer();
+                    status = player.hasPermission("world." + worldName);
+                    if (!status) {
+                        String message = ChatColor.RED + "你没有前往 " + worldName + " 世界的权限";
+                        player.sendMessage(message);
+                        event.setCancelled(true);
+                    }
+                }
+            }
         }
-    }
-
-    private boolean isBlacklisted(World world) {
-        return blacklistedWorlds.contains(world.getName());
-    }
-
-    private boolean isWhitelisted(World world) {
-        return whitelistedWorlds.contains(world.getName());
     }
 }

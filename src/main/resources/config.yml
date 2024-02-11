@@ -1,0 +1,7 @@
+blacklisted_worlds:
+  - world_nether
+  - world_the_end
+whitelisted_worlds:
+  - world
+blacklist_enabled: true
+whitelist_enabled: false
