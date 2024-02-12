@@ -55,7 +55,7 @@ public class BanWorld extends JavaPlugin implements Listener {
                 }
             } else if (config.getBoolean("blacklist_enabled", true)) {
                 boolean status = blacklist.contains(worldName);
-                if (!status) {
+                if (status) {
                     Player player = event.getPlayer();
                     status = player.hasPermission("world." + worldName);
                     if (!status) {
