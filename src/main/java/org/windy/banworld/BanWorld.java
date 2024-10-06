@@ -18,12 +18,14 @@ public class BanWorld extends JavaPlugin implements Listener {
     private boolean blacklistEnabled;
     private boolean whitelistEnabled;
     private String prefix;
+    private FileConfiguration config;
 
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
         Bukkit.getPluginManager().registerEvents(this, this);
         
+        config = this.getConfig();
         prefix = config.getString("prefix", "§b[§bBanWorld§b]§f ");
     }
 
