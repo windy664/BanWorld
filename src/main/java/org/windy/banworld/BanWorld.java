@@ -54,7 +54,7 @@ public class BanWorld extends JavaPlugin implements Listener {
                         String message = ChatColor.RED + "你没有前往 " + worldName + " 世界的权限";
                         player.sendMessage(message);
                         event.setCancelled(true);
-                        logger("已阻止" + player.getName() "前往" + worldName);
+                        logger("已阻止" + player.getName() + "前往" + worldName);
                     }
                 }
             } else if (config.getBoolean("blacklist_enabled", true)) {
@@ -66,7 +66,7 @@ public class BanWorld extends JavaPlugin implements Listener {
                         String message = ChatColor.RED + "你没有前往 " + worldName + " 世界的权限";
                         player.sendMessage(message);
                         event.setCancelled(true);
-                        logger("已阻止" + player.getName() "前往" + worldName);
+                        logger("已阻止" + player.getName() + "前往" + worldName);
                     }
                 }
             }
