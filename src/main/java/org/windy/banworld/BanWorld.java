@@ -17,11 +17,14 @@ public class BanWorld extends JavaPlugin implements Listener {
     private List<String> whitelistedWorlds;
     private boolean blacklistEnabled;
     private boolean whitelistEnabled;
+    private String prefix;
 
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
         Bukkit.getPluginManager().registerEvents(this, this);
+        
+        prefix = config.getString("prefix", "§b[§bBanWorld§b]§f ");
     }
 
     @EventHandler
@@ -51,6 +54,7 @@ public class BanWorld extends JavaPlugin implements Listener {
                         String message = ChatColor.RED + "你没有前往 " + worldName + " 世界的权限";
                         player.sendMessage(message);
                         event.setCancelled(true);
+                        logger("已阻止" + player.getName() "前往" + worldName);
                     }
                 }
             } else if (config.getBoolean("blacklist_enabled", true)) {
@@ -62,9 +66,16 @@ public class BanWorld extends JavaPlugin implements Listener {
                         String message = ChatColor.RED + "你没有前往 " + worldName + " 世界的权限";
                         player.sendMessage(message);
                         event.setCancelled(true);
+                        logger("已阻止" + player.getName() "前往" + worldName);
                     }
                 }
             }
+        }
+    }
+
+        public void logger(String message) {
+        if (config.getBoolean("debug", false)) {
+            this.getServer().getConsoleSender().sendMessage(prefix + message);
         }
     }
 }
