@@ -5,3 +5,4 @@ whitelisted_worlds:
   - world
 blacklist_enabled: true
 whitelist_enabled: false
+debug: false
